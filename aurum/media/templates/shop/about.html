@@ -1,0 +1,52 @@
+{% extends 'shared/site.html' %}
+{% load static %}
+{% block title %} About {% endblock title %}
+{% block body %}
+
+		<section class="contact">
+			
+			<div id="map"></div>
+			<script src="{% static 'js/maps.js' %}"></script>
+			<!--YOU MUST REPLACE WITH YOUR OWN API KEY FOR THE MAP TO WORK-->
+			<script async defer
+				src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBptaDKT_ntSoNEytCnSang5JenaNAj_Us&callback=initMap">
+				</script>
+
+			<div class="container">
+				<div class="row contact-details">
+					<div class="col-sm-8 text-center text-md-left">
+						<p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus venenatis velit vestibulum massa sollicitudin auctor. Cras ac venenatis orci. Ut consequat, purus ut ultrices ultricies, nisi sem ornare quam, sed ultricies mi nisl sit amet purus.</p>
+						<h3 class="mb-4 mt-4">Get News From us</h3>
+						<form class="contact-form mt-4">
+							<div class="row">
+								<div class="col-md-6">
+									<input type="text" class="form-control mb-4" placeholder="Name" value="Your name">
+								</div>
+								<div class="col-md-6">
+									<input type="text" class="form-control mb-4" placeholder="Email address" value="Email address">
+								</div>
+								<br />
+							</div>
+							<button type="submit" class="btn btn-outline-primary btn-lg btn-block mb-5">Let's Join</button>
+						</form>
+					</div>
+					<div class="col-sm-4 mb-5 text-center text-md-left">
+						<h3>Contact</h3>
+						<h4 class="pt-4">Email</h4>
+						<p>{{ aboutus_G.email }}</p>
+						<h4 class="pt-2">Phone</h4>
+						<p>{{ aboutus_G.phone }}</p>
+						<h4 class="pt-2">Address</h4>
+						<p>{{ aboutus_G.address }}</p>
+						<ul class="social">
+							<li><a href="{{ aboutus_G.facebook }}" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="{{ aboutus_G.twitter }}" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="{{ aboutus_G.telegram }}" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a></li>
+							<li><a href="{{ aboutus_G.instagram }}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a></li>
+							<div class="clear"></div>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+{% endblock body %}

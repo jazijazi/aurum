@@ -1,0 +1,201 @@
+{% extends 'shared/site.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %} Item {% endblock title %}
+{% block head %}<script src="{% static 'js/item.js' %}"></script> {% endblock head %}
+{% block body %}
+
+		<section class="featured-block text-center">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-6 text-center">
+						<div class="product-image mt-3">
+							<img class="mainimage img-fluid" src="">
+						</div>
+						<div class="product-thumbnails">
+							{% for img in product.images.all|slice:5 %}
+							<a href="#">
+								<img class="subimage mt-2 mr-2 img-fluid" src="{{img.image.url}}" >
+							</a>
+							{% endfor %}
+							<!--
+							<a href="#">
+								<img class="mt-2 mr-2 img-fluid" src="images/placeholder-product.jpg" ></a>
+							<a href="#">
+								<img class="mt-2 mr-2 img-fluid" src="images/placeholder-product.jpg" ></a>
+							<a href="#">
+								<img class="mt-2 mr-2 img-fluid" src="images/placeholder-product.jpg" ></a>
+							<a href="#">
+							<img class="mt-2 mr-2 img-fluid" src="images/placeholder-product.jpg" ></a>
+							-->
+						</div>
+					</div>
+					<div class="col-md-6 mt-5 mt-md-2 text-center text-md-left">
+						<h2 class="mb-3 mt-0">{{ product.name }}</h2>
+						<p class="lead mt-2 mb-3 primary-color">${{ product.price }}</p>
+						<h5 class="mt-1">Brand</h5>
+						<p>{{ product.brand }}</p>
+						<h5 class="mt-4">Description</h5>
+						<p>{{ product.description }}</p>
+
+						<form action="{% url 'shop:cart' %}" method="POST">
+							{% csrf_token %}
+								<select name="choice" id="myselect" class="custom-select form-control mt-4 mb-4">
+									<option selected disabled>Size</option>
+									{% for inst in product.productinstance_set.all %}
+										{% if inst.num > 0 %}
+											<option value="{{inst.size}}#{{inst.color}}">{{ inst.color }} (size : {{inst.size}} )</option>
+										{% endif %}
+									{% endfor %}
+								</select>
+							<input type="hidden" class="form-control quantity mb-4" name="product" value="{{product.id}}">
+							<input type="hidden" class="form-control quantity mb-4" name="formchoice" value="formchoice">
+							<!--Quantity: <input type="text" class="form-control quantity mb-4" name="" value="1">-->
+							<button id="addtocart" type="submit" disabled class="btn btn-full-width btn-lg btn-outline-primary">Add to cart</button>
+						
+						</form>
+					
+					</div>
+
+				</div>
+				<div class="mt-5 divider"></div>
+				{% if messages %}
+					{% for message in messages %}
+						<div class="col-12">
+							{% if message.tags == "error" %}
+								<div class="text-center alert alert-dismissible alert-danger fade show" role="alert">
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+									{{message}}
+								</div>
+							{% else %}
+								<div class="text-center alert alert-dismissible alert-{{message.tags}} fade show" role="alert">
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+									</button>
+									{{message}}
+								</div>
+							{% endif %} 
+						</div>
+					{% endfor %}
+				{% endif %}
+
+				{% if user.is_authenticated %}
+				<div class="row">
+					<div class="col-12">
+						<div class="card shadow bg-light">
+							<div class="card-body text-left">
+								<legend>Add Your Comment</legend><br>
+								<form method="POST" class="post-form">
+									{% csrf_token %}
+									<fieldset class="form-group">
+										{{ form|crispy }}
+									</fieldset>
+									<fieldset class="form-group text-right">
+										<button type="submit" class="btn btn-lg btn-primary">Send</button>
+									</fieldset>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% else %}
+				<div class="row">
+					<div class="col-12">
+						<div class="card shadow bg-light">
+							<div class="card-body">
+								<legend>You must be logged in to post a comment</legend>
+								<a href="{% url 'user:login' %}" class="btn btn-primary">Login</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+				
+				<div class="mt-5 divider"></div>
+
+				<div id="commentsection">
+					{% if comments %}
+					<div class="row text-left mt-5">
+						<div class="col-12">
+							{% for cmt in comments %}
+								<div class="card shadow bg-light mb-5">
+									<div class="card-header bg-primary text-white">
+										{{cmt.user}} : {{cmt.subject}}
+										<div style="float:right;">
+											{% if cmt.user == user %}
+											<button pk={{cmt.pk}} class="del-comment btn btn-primary"><i class="fas fa-trash"></i></button>
+											{% else %}
+											<button pk={{cmt.pk}} class="like {% if user in cmt.user_like.all %} thumbs-green {% endif %} btn btn-primary"><i class="fas fa-thumbs-up"></i></button>
+											<span liked-pk={{cmt.pk}}>{{cmt.user_like.count}}</span>
+											<button pk={{cmt.pk}} class="dislike {% if user in cmt.user_dislike.all %} thumbs-red {% endif %} btn btn-primary"><i class="fas fa-thumbs-down"></i></button>
+											<span disliked-pk={{cmt.pk}}>{{cmt.user_dislike.count}}</span>
+											{% endif %}
+										</div>
+									</div>
+									<div class="card-body">
+										<blockquote class="blockquote mb-0">
+											<p>{{cmt.text}}</p>
+										</blockquote>
+									</div>
+									<div class="card-footer small text-right text-muted">{{cmt.created|timesince}} ago</div>
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-4">
+						<button pk={{product.pk}} count="1" id="loadmorebtn" class="btn btn-primary btn-lg btn-block">Load more</button>
+					</div>
+				</div>
+				{% else %}
+					<h4 class="mt-5">No Comments here yet</h4>
+				{% endif %}
+				</div>
+			</div>
+		</section>
+		
+		<div class="divider"></div>
+		
+		<section class="products text-center">
+			<div class="container">
+				<h3 class="mb-4">Related Products</h3>
+				<div class="row">
+					{% for related_obj in related %}
+					<div class="col-sm-6 col-md-3 col-product">
+						<figure>
+							<img class="rounded-corners img-fluid" src="{% for img in related_obj.images.all|slice:1 %} {{img.image.url}} {% endfor %}"	width="240" height="240">
+							<figcaption>
+								<div class="thumb-overlay"><a href="{% url 'shop:ProductDetail' related_obj.pk %}" title="More Info">
+									<i class="fas fa-search-plus"></i>
+								</a></div>
+							</figcaption>
+						</figure>
+						<h4><a href="{% url 'shop:ProductDetail' related_obj.pk %}">{{related_obj.name}}</a></h4>
+						<p><span class="emphasis">${{related_obj.price}}</span></p>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</section>
+		
+		<div class="divider"></div>
+		
+		<section class="cta text-center">
+			<div class="container">
+				<h3 class="mt-0 mb-4">Keep up with the latest discounts</h3>
+				<form class="subscribe">
+					<div class="form-group row pt-3">
+						<div class="col-sm-8 mb-3">
+							<input type="text" class="form-control" id="inputName" placeholder="Your Email">
+						</div>
+						<div class="col-sm-4">
+							<button type="submit" class="btn btn-lg btn-outline-primary">Sign me up</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+{% endblock body %}

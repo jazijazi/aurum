@@ -1,0 +1,13 @@
+{% extends 'shared/site.html' %}
+{% load static %}
+{% block title %} Payment (bank payment page) {% endblock title %}
+
+{% block body %}
+<div class="container pb-5">
+    <div class="row text-center justify-content-center">
+        <h1 class="col-12 mt-5">This is example for payment page </h1>
+        <h4 class="col-12 mb-5">(replace with payment bank page)</h4>
+        <a href="{% url 'shop:factor' %}" class="col-6 mt-5 btn btn-lg btn-success">Pay...</a>
+    </div>
+</div>
+{% endblock body %}

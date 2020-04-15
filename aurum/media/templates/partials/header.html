@@ -1,0 +1,115 @@
+<section class="header text-center">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container"><a class="navbar-brand" href="{% url 'shop:index' %}"><i
+                    class="fas fa-shopping-bag primary-color mr-1"></i> Aurum</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-1"
+                aria-controls="navbar-1" aria-expanded="false" aria-label="Toggle navigation"><span
+                    class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse pull-xs-right justify-content-end" id="navbar-1">
+                <ul class="navbar-nav mt-2 mt-md-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:index' %}">Home <span
+                                class="sr-only">(current)</span></a></li>
+                    <li class="nav-item dropdown mega-menu"><a class="nav-link dropdown-toggle" href="{% url 'shop:catalog' %}"
+                            id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">Shop </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <div class="container">
+                                <div class="divider"></div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <h6 class="text-uppercase">Women's</h6>
+                                        <ul class="nav flex-column">
+                                            {% for w in women %}
+                                            <li class="nav-item"><a class="nav-link" href="{% url 'shop:ProductDetail' w.pk %}">{{w.name}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h6 class="text-uppercase">Men's</h6>
+                                        <ul class="nav flex-column">
+                                            {% for m in men %}
+                                            <li class="nav-item"><a class="nav-link" href="{% url 'shop:ProductDetail' m.pk %}">{{m.name}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h6 class="text-uppercase">Girl's</h6>
+                                        <ul class="nav flex-column">
+                                            {% for g in girls %}
+                                            <li class="nav-item"><a class="nav-link" href="{% url 'shop:ProductDetail' g.pk %}">{{g.name}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h6 class="text-uppercase">Boy's</h6>
+                                        <ul class="nav flex-column">
+                                            {% for b in boys %}
+                                            <li class="nav-item"><a class="nav-link" href="{% url 'shop:ProductDetail' b.pk %}">{{b.name}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-uppercase">Featured Items</h6>
+                                        <div class="row">
+                                            {% for f in featured_product %}
+                                            <div class="col-6 text-center">
+                                                <a href="item.html">
+                                                    <img src="{% for img in f.images.all|slice:1 %} {{img.image.url}} {% endfor %}" alt=""
+                                                        class="img-fluid mt-2 mb-3"></a>
+                                                <h6 class="mb-0"><a href="{% url 'shop:ProductDetail' f.pk %}">{{ f.name }}</a></h6>
+                                                <p><span class="emphasis">${{ f.price }}</span></p>
+                                                <a href="{% url 'shop:ProductDetail' f.pk %}" class="btn btn-sm btn-outline-secondary mt-0">Buy Now</a>
+                                                <p>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:about' %}">AboutUs</a></li>
+
+                    {% if user.is_authenticated %}
+                    {% url 'shop:cart' as cart_url %} <!--User in cart page Dont see cart in header -->
+                    {% if not request.path == cart_url %} <!--User in cart page Dont see cart in header -->
+                    <!--Shop cart item-->
+                    <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                            role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                class="fas fa-shopping-cart"></i> <span
+                                class="badge badge-pill badge-primary">{{headercart.item_list.count}}</span></a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-cart" aria-labelledby="navbarDropdown">
+                            <h6>{{headercart.item_list.count}}&nbsp;Items&nbsp;<span class="emphasis">${{headercart.cart_total}}</span></h6>
+                            <div class="dropdown-divider"></div>
+                            <ul class="shopping-cart-items">
+                                {% for c in headercart.item_list.all %}
+                                <li class="row">
+                                    <div class="col-3">
+                                        <img src="{% for img in c.item.product.images.all|slice:1 %} {{img.image.url}} {% endfor %}" width="60">
+                                    </div>
+                                    <div class="col-9">
+                                        <h6><a href="{% url 'shop:ProductDetail' c.item.product.pk %}">{{c.item.product.name}}</a></h6>
+                                        <span class="text-muted">{{c.order_num}}x</span>
+                                        <span class="emphasis">${{c.item_total}}</span>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                            <a href="{% url 'shop:cart' %}" class="btn btn-lg btn-full-width btn-primary" style="margin: 0;">View Cart</a>
+                        </div>
+                    </li>
+                    <!--Shop cart item-->
+                    {% endif %} <!--User in cart page Dont see cart in header -->
+
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user:logout' %}">Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user:profile' %}">Profile</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user:login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user:register' %}">Signup</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</section>
